@@ -1,4 +1,4 @@
-namespace Kube.Service
+namespace Kube.Lib
 {
     public class WeatherForecast
     {
