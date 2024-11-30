@@ -37,3 +37,17 @@ kubectl apply -f service.yml
 service yaml daki targetPort dockerfile icindeki expose edilen porta karsilik geliyor, 
 
 targetPort: 5000
+
+
+deployment yaml daki port - container ifadesi kubernetes in network unde bu pod a ulasmak icin kullanacagi port anlamina geliyor,
+
+ports:
+- containerPort: 80
+
+service.yaml daki karsili port degiskeni oluyor
+
+port: 80
+
+service yaml daki nodePort port ise disaridan pod a erismek icin gereken port
+
+nodePort: 32500

@@ -16,3 +16,5 @@ spec:
         - name: kubeservice
           image: kubeservice.cmd:latest
           imagePullPolicy: Never
+          ports:
+          - containerPort: 80
