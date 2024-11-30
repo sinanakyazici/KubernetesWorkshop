@@ -24,8 +24,16 @@ Seçenek	Açıklama
 
 docker run -dit --name Kube.Service.Cmd -p 5000:80 kubeservice.cmd
 
+Dockfile icinde EXPOSE edilen port 80 den farkli oldugu zaman environment olarak url belirtmek gerekiyor, 
+
+ENV ASPNETCORE_URLS=http://+:5000
+
 ------------------
 kubectl komutlarini kullanmadan once mutlaka docker login olmaniz gerekiyor, yoksa image cekmede sorun olabilir.
 docker login docker.io
 kubectl apply -f deployment.yml
 kubectl apply -f service.yml
+
+service yaml daki targetPort dockerfile icindeki expose edilen porta karsilik geliyor, 
+
+targetPort: 5000
