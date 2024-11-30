@@ -19,6 +19,7 @@ spec:
           ports:
           - containerPort: 5000 # Konteynerin içinde hangi portun açılacağını belirtir. Bu port pod içinde erişilebilir olacaktır. Dockerfile icindeki expose a karsilik gelir.
                                 # Yanlış containerPort belirtilmiş olsa bile, servis ve targetPort doğru yapılandırıldığında dışarıdan erişim sağlanabilir. Bu durumda, containerPort sadece belge amaçlıdır ve dış dünyaya port yönlendirme işlemi servisle yapılır.
+          - containerPort: 5050
           resources:
            requests: # Konteynerin minimum kaynak taleplerini belirtir. Bu, konteynerin çalışmaya başlamadan önce ihtiyaç duyduğu kaynaklardır.
              cpu: 2000m # Kendi çalışma süresi için 2 CPU birimi talep eder.

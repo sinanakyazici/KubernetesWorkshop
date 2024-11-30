@@ -7,8 +7,13 @@ spec:
   selector:
     app: kubeservice # Hangi pod'lara hizmet verileceğini belirler. 'app: kubeservice' etiketi ile eşleşen pod'lara bu servis yönlendirilir.
   ports:
-  - name: http # Port ismini belirtir. Bu, portu tanımlamak için kullanılan insandır. Genellikle daha açıklayıcı olması için kullanılır.
+  - name: http # Port ismini belirtir. Bu, portu tanımlamak için kullanılan aciklama. Genellikle daha açıklayıcı olması için kullanılır.
     protocol: TCP # Kullanılacak protokolü belirtir. HTTP trafiği için TCP protokolü yaygın olarak kullanılır.
     port: 80 # Kubernetes icindeki erisim portu. Node icinden bu port üzerinden servise erişir. Ingress katmanindan servislere erismek icin. (NodePort, Ingress) -> Port (Service Port or ClusterIP port) -> TargetPort
     targetPort: 5000 # Pod içindeki gerçek port. Bu, servis tarafından yönlendirilen trafiğin ulaştığı pod içindeki porttur.
     nodePort: 32500 # Kubernetes node'ları üzerinde açılacak port. Dışaridan bu port üzerinden erişim sağlanabilir. Her node'da aynı port ile erişim mümkündür.
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 5050
+    nodePort: 32550
