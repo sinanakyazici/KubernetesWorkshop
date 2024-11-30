@@ -1,14 +1,14 @@
-﻿apiVersion: v1
-kind: Service
+﻿apiVersion: v1 # API versiyonunu belirtir. Kubernetes'in kullandığı API versiyonunu ifade eder. Burada 'v1', temel kaynak türleri için kullanılan versiyondur.
+kind: Service # Bu, bir Kubernetes nesnesinin türüdür. 'Service' türü, bir uygulamanın hizmetini dış dünyaya veya diğer pod'lara sunmak için kullanılır.
 metadata:
-  name: kubeservice-service
+  name: kubeservice-service # Service nesnesinin adı. Diğer kaynaklarla iletişimde kullanılır, benzersiz olmalıdır.
 spec:
-  type: NodePort
+  type: NodePort  # Service türünü belirtir. 'NodePort', dışaridan erişebilmek için bir port açar. Bu, pod'un portunu dışaridan iletişimde kullanmak için uygun bir yöntemdir.
   selector:
-    app: kubeservice
+    app: kubeservice # Hangi pod'lara hizmet verileceğini belirler. 'app: kubeservice' etiketi ile eşleşen pod'lara bu servis yönlendirilir.
   ports:
-  - name: http
-    protocol: TCP
-    port: 80
-    targetPort: 5000
-    nodePort: 32500
+  - name: http # Port ismini belirtir. Bu, portu tanımlamak için kullanılan insandır. Genellikle daha açıklayıcı olması için kullanılır.
+    protocol: TCP # Kullanılacak protokolü belirtir. HTTP trafiği için TCP protokolü yaygın olarak kullanılır.
+    port: 80 # Kubernetes icindeki erisim portu. Node icinden bu port üzerinden servise erişir. Ingress katmanindan servislere erismek icin. (NodePort, Ingress) -> Port (Service Port or ClusterIP port) -> TargetPort
+    targetPort: 5000 # Pod içindeki gerçek port. Bu, servis tarafından yönlendirilen trafiğin ulaştığı pod içindeki porttur.
+    nodePort: 32500 # Kubernetes node'ları üzerinde açılacak port. Dışaridan bu port üzerinden erişim sağlanabilir. Her node'da aynı port ile erişim mümkündür.

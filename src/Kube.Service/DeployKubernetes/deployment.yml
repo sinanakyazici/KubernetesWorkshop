@@ -1,30 +1,50 @@
-﻿apiVersion: apps/v1
-kind: Deployment
+﻿apiVersion: apps/v1 # Kubernetes uygulama dağıtımları için kullanılan API versiyonudur. 'apps/v1', Deployment gibi uygulama kaynakları için en yaygın versiyondur.
+kind: Deployment # Kubernetes'te bir uygulamanın dağıtımı için kullanılan kaynak türü. 'Deployment', pod'ları yönetir ve otomatik güncellemeler yapar.
 metadata:
-  name: kubeservice-deployment
+  name: kubeservice-deployment # Bu, Deployment kaynağının adıdır ve Kubernetes içinde benzersiz olmalıdır.
 spec:
-  replicas: 1
+  replicas: 1  # Dağıtımda kaç tane pod çalıştırılacağını belirler. Burada 1 tane pod başlatılır, yani tek bir örnek çalıştırılır.
   selector:
     matchLabels:
-      app: kubeservice
+      app: kubeservice # Deployment, 'app: kubeservice' etiketiyle eşleşen pod'ları seçecektir. Bu, hangi pod'ların bu dağıtımdan sorumlu olduğunu belirtir.
   template:
     metadata:
       labels:
-        app: kubeservice
+        app: kubeservice # Pod'lara bu etiket verilir, böylece bu etiketle eşleşen pod'lar Deployment tarafından yönetilir.
     spec:
       containers:
-        - name: kubeservice
-          image: kubeservice.cmd:latest
-          imagePullPolicy: Never
+        - name: kubeservice # Pod içindeki konteynerin adı. Bu ad, konteyneri tanımlamak için kullanılır.
+          image: kubeservice.cmd:latest  # Kullanılacak Docker imajının adı ve etiketi. Burada 'latest' etiketi kullanılarak en güncel imaj alınır.
+          imagePullPolicy: Never # Docker imajının her başlatmada çekilmemesi gerektiğini belirtir. Yerel imaj kullanılacaktır, bu sayede ağ trafiği engellenir.
           ports:
-          - containerPort: 80
+          - containerPort: 5000 # Konteynerin içinde hangi portun açılacağını belirtir. Bu port pod içinde erişilebilir olacaktır. Dockerfile icindeki expose a karsilik gelir.
+                                # Yanlış containerPort belirtilmiş olsa bile, servis ve targetPort doğru yapılandırıldığında dışarıdan erişim sağlanabilir. Bu durumda, containerPort sadece belge amaçlıdır ve dış dünyaya port yönlendirme işlemi servisle yapılır.
           resources:
-           requests:
-             cpu: 2000m
-             memory: 4096Mi
-           limits:
-             cpu:  5000m
-             memory: 8192Mi
-          env:
-          - name: ASPNETCORE_ENVIRONMENT
-            value: "Production"
+           requests: # Konteynerin minimum kaynak taleplerini belirtir. Bu, konteynerin çalışmaya başlamadan önce ihtiyaç duyduğu kaynaklardır.
+             cpu: 2000m # Kendi çalışma süresi için 2 CPU birimi talep eder.
+             memory: 4096Mi # 4 GiB bellek talep eder.
+           limits: # Konteynerin kullanabileceği maksimum kaynak sınırlarıdır. Bu, kaynak kullanımını sınırlandırarak aşırı kullanımın önüne geçer.
+             cpu:  5000m # Kendi çalışma süresi için 5 CPU birimi limiti belirler.
+             memory: 8192Mi # 8 GiB bellek limiti belirler.
+          env: # Konteynerde kullanılacak ortam değişkenlerini tanımlar.
+          - name: ASPNETCORE_ENVIRONMENT # Ortam değişkeninin adı. Bu, uygulama içinde 'ASPNETCORE_ENVIRONMENT' adıyla erişilebilecektir.
+            value: "Production" # Bu ortam değişkeninin değeri. Uygulamanın üretim ortamında çalıştığını belirtir.
+          livenessProbe: # Konteynerin sağlıklı olduğunu kontrol eden prob (canlılık kontrolü)
+            httpGet:
+              path: / # Sağlık kontrolü yapılacak yol (bu örnekte kök yolu)
+              port: 5000 # Sağlık kontrolünün yapılacağı port, container da expose edilen port
+            periodSeconds: 5 # Her 5 saniyede bir sağlık kontrolü yapılır
+            failureThreshold: 5 # Konteyner 5 kez başarısız olursa, sağlıksız olarak işaretlenir
+          readinessProbe: # Konteynerin trafiği almaya hazır olup olmadığını kontrol eden prob (hazırlık kontrolü)
+            httpGet:
+              path: / # Hazırlık kontrolü yapılacak yol (bu örnekte kök yolu)
+              port: 5000 # Hazırlık kontrolünün yapılacağı port, container da expose edilen port
+            periodSeconds: 5 # Hazırlık kontrolü her 5 saniyede bir yapılır
+            failureThreshold: 5 # Konteyner 5 kez başarısız olursa, hazır değil olarak işaretlenir
+          startupProbe: # Konteynerin başarılı bir şekilde başlatılıp başlatılmadığını kontrol eden prob (başlangıç kontrolü)
+            httpGet:
+              path: / # Başlangıç kontrolü yapılacak yol (bu örnekte kök yolu)
+              port: 5000 # Başlangıç kontrolünün yapılacağı port, container da expose edilen port
+            initialDelaySeconds: 20 # İlk başlangıç kontrolü için 20 saniye beklenir, bu saniye gecmeden pod hazir hale gelmez, ama burada belirtilen zamana kadar pod ayaga kalmazsa bu sefer startup fail almaya baslar.
+            periodSeconds: 5 # Başlangıç kontrolü her 5 saniyede bir yapılır
+            failureThreshold: 30 # Konteyner 30 kez başarısız olursa, başlangıçta hata olarak işaretlenir
