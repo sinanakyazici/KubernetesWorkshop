@@ -1,5 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
-
+Console.WriteLine(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
 // Add services to the container.
 
 builder.Services.AddControllers();
