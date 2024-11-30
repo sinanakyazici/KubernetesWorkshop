@@ -6,12 +6,15 @@
 	-f komutu dockerfile in path ini vermek lazim
 	-t image adini belirtir tag lemek icin
 	docker build -t kubeservice.cmd -f Dockerfile ../../
+
+	detayli loglama icin 
+	docker buildx build -t kubeservice.cmd -f Dockerfile ../../ --progress=plain --no-cache
 	
 2 - docker run
 
 
 Seçenek	Açıklama
--d	Arka planda çalıştırır.
+-d	Arka planda çalıştırır. (anlik calisitiginiz konsolu kullanmaz arka planda calismaya baslar. siz konsolde islem yapmaya devam edebilirsiniz)
 -it	Etkileşimli terminal başlatır. (kullanici girdisi ve termimal ile kontainer izleme)
 -p	Port yönlendirmesi yapar (örn: -p 8080:80). [disaridan kontainer erismek icin gereken port]:[kontainer in icindeki port]
 -e	Ortam değişkeni tanımlar.

@@ -1,4 +1,7 @@
-﻿namespace Kube.Lib;
+﻿using Murmur;
+using System.Security.Cryptography;
+
+namespace Kube.Lib;
 
 public class WeatherService
 {
@@ -13,7 +16,16 @@ public class WeatherService
         {
             Date = DateTime.Now.AddDays(index),
             TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+            Summary = Summaries[Random.Shared.Next(Summaries.Length)],
+            Hash = Hash()
         }).ToArray();
+    }
+
+    private string Hash()
+    {
+        var data = Guid.NewGuid().ToByteArray();
+        HashAlgorithm murmur128 = MurmurHash.Create128(managed: false); // returns a 128-bit algorithm using "unsafe" code with default seed
+        var hash = murmur128.ComputeHash(data);
+        return BitConverter.ToString(hash).Replace("-", "");
     }
 }

@@ -8,19 +8,56 @@ EXPOSE 80
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BUILD_CONFIGURATION=Release
+RUN echo "WORKDIR /app" \
+    && TARGET_DIR=$(pwd) \
+    && PARENT_DIR=$(dirname $TARGET_DIR) \
+    && echo "Target folder is: $TARGET_DIR" \
+    && echo "Full path to target folder: $(readlink -f $TARGET_DIR)" \
+    && ls -la $TARGET_DIR \
+    && echo "Parent folder is: $PARENT_DIR" \
+    && echo "Full path to target folder: $(readlink -f $PARENT_DIR)" \
+    && ls -la $PARENT_DIR
 WORKDIR /src
-COPY ["src/Kube.Service/Kube.Service.csproj", "src/Kube.Service/"]
-RUN dotnet restore "./src/Kube.Service/Kube.Service.csproj"
+RUN echo "WORKDIR /src" \
+    && TARGET_DIR=$(pwd) \
+    && PARENT_DIR=$(dirname $TARGET_DIR) \
+    && echo "Target folder is: $TARGET_DIR" \
+    && echo "Full path to target folder: $(readlink -f $TARGET_DIR)" \
+    && ls -la $TARGET_DIR \
+    && echo "Parent folder is: $PARENT_DIR" \
+    && echo "Full path to target folder: $(readlink -f $PARENT_DIR)" \
+    && ls -la $PARENT_DIR
 COPY . .
-WORKDIR "/src/src/Kube.Service"
-RUN dotnet build "./Kube.Service.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN echo "WORKDIR /src" \
+    && TARGET_DIR=$(pwd) \
+    && PARENT_DIR=$(dirname $TARGET_DIR) \
+    && echo "Target folder is: $TARGET_DIR" \
+    && echo "Full path to target folder: $(readlink -f $TARGET_DIR)" \
+    && ls -la $TARGET_DIR \
+    && echo "Parent folder is: $PARENT_DIR" \
+    && echo "Full path to target folder: $(readlink -f $PARENT_DIR)" \
+    && ls -la $PARENT_DIR
+WORKDIR /src/src
+RUN echo "WORKDIR /src/src" \
+    && TARGET_DIR=$(pwd) \
+    && PARENT_DIR=$(dirname $TARGET_DIR) \
+    && echo "Target folder is: $TARGET_DIR" \
+    && echo "Full path to target folder: $(readlink -f $TARGET_DIR)" \
+    && ls -la $TARGET_DIR \
+    && echo "Parent folder is: $PARENT_DIR" \
+    && echo "Full path to target folder: $(readlink -f $PARENT_DIR)" \
+    && ls -la $PARENT_DIR
+WORKDIR /src
 
-# This stage is used to publish the service project to be copied to the final stage
+# install nuget pakcages
+RUN dotnet restore "src/Kube.Service/Kube.Service.csproj"
+# build project
+RUN dotnet build "src/Kube.Service/Kube.Service.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Kube.Service.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "src/Kube.Service/Kube.Service.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
